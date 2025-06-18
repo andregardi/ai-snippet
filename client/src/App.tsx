@@ -8,7 +8,6 @@ import {
   Toolbar,
   Typography
 } from '@mui/material'
-import ContentSummarizer from './components/ContentSummarizer'
 import PasteYourContent from './components/PasteYourContent'
 import YourSnippets from './components/YourSnippets'
 import theme from './theme'
