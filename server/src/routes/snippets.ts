@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express'
+import { Router, Request, Response } from 'express'
 import { Snippet } from '../models/snippet'
 import { summarizeWithOpenAI } from '../services/open-ai/open-ai'
 
@@ -10,11 +10,12 @@ router.post('/', async (req: Request, res: Response) => {
     return
   }
 
-  const summary = await summarizeWithOpenAI(req.body.text)
+  const { output_text } = await summarizeWithOpenAI(req.body.text)
+  console.log(output_text)
 
   const snippet = new Snippet({
     text: req.body.text,
-    summary: summary
+    summary: output_text
   })
 
   await snippet.save()
@@ -27,7 +28,7 @@ router.get('/', async (req: Request, res: Response) => {
   res.send(snippets)
 })
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:id', async (req: Request, res: Response) => {
   const snippet = await Snippet.findById(req.params.id)
   if (!snippet) {
     res.status(404).send('Snippet not found')

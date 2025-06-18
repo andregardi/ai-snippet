@@ -3,14 +3,14 @@ import express, { RequestHandler } from 'express'
 import request from 'supertest'
 import { errorHandler } from '../../src/middlewares/error-handler'
 
-const testHandler: RequestHandler = (req, res) => {
+const testHandler: RequestHandler = () => {
   throw new Error('Test error')
 }
 
 describe('errorHandler middleware', () => {
   it.only('should handle errors and return 500 status', async () => {
     const app = express()
-    
+
     app.get('/test', testHandler)
     app.use(errorHandler)
 
