@@ -1,15 +1,46 @@
 import './App.css'
+import {
+  ThemeProvider,
+  CssBaseline,
+  Box,
+  Container,
+  AppBar,
+  Toolbar,
+  Typography
+} from '@mui/material'
 import ContentSummarizer from './components/ContentSummarizer'
 import PasteYourContent from './components/PasteYourContent'
 import YourSnippets from './components/YourSnippets'
+import theme from './theme'
 
 function App() {
   return (
-    <div className="App">
-      <ContentSummarizer />
-      <PasteYourContent />
-      <YourSnippets />
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          bgcolor: 'background.default'
+        }}
+      >
+        <AppBar position="static" color="primary" elevation={0}>
+          <Toolbar>
+            <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
+              AI Snippet Manager
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <PasteYourContent />
+            <YourSnippets />
+          </Box>
+        </Container>
+      </Box>
+    </ThemeProvider>
   )
 }
 

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import YourSnippets from '.'
 import useGetAllSnippets from '../../hooks/getAllSnippets'
 
@@ -20,8 +20,8 @@ describe('YourSnippets', () => {
       error: null
     })
 
-    const { getByText } = render(<YourSnippets />)
-    expect(getByText('Loading snippets...')).toBeInTheDocument()
+    render(<YourSnippets />)
+    expect(screen.getByText('Loading snippets...')).toBeInTheDocument()
   })
 
   test('should show error state', () => {
@@ -31,8 +31,8 @@ describe('YourSnippets', () => {
       error: new Error('Failed to load')
     })
 
-    const { getByText } = render(<YourSnippets />)
-    expect(getByText('Error loading snippets')).toBeInTheDocument()
+    render(<YourSnippets />)
+    expect(screen.getByText('Error loading snippets')).toBeInTheDocument()
   })
 
   test('should show snippets when loaded', () => {
