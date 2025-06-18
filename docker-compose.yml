@@ -17,5 +17,19 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
+      - MONGO_URI=mongodb://mongodb:27017/ai-snippet
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: local_mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
     restart: unless-stopped
 
+volumes:
+  mongo_data:
