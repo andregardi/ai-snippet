@@ -2,14 +2,13 @@ import useGetAllSnippets from '../../hooks/getAllSnippets'
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   List,
   ListItem,
   Divider,
   CircularProgress,
   Paper
 } from '@mui/material'
+import Snippet from './Snippet'
 
 export default function YourSnippets() {
   const { data, loading, error } = useGetAllSnippets()
@@ -39,16 +38,7 @@ export default function YourSnippets() {
             <Box key={snippet._id}>
               {index > 0 && <Divider sx={{ my: 2 }} />}
               <ListItem disableGutters sx={{ display: 'block', px: 0 }}>
-                <Card variant="outlined" sx={{ mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {snippet.summary}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {snippet.text}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <Snippet snippet={snippet} />
               </ListItem>
             </Box>
           ))}
