@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: ./client/package-lock.json
+    
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./client
+    
+    - name: Run client lint
+      run: npm run lint
+      working-directory: ./client
+    
+    - name: Run client tests
+      run: npm test
+      working-directory: ./client
+    
+    - name: Build client Docker image
+      run: docker build -t client .
+      working-directory: ./client
+
+  server:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: ./server/package-lock.json    
+    
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./server
+    
+    - name: Run server lint
+      run: npm run lint
+      working-directory: ./server
+    
+    - name: Run server tests
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: npm test
+      working-directory: ./server
+    
+    - name: Build server Docker image
+      run: docker build -t server .
+      working-directory: ./server

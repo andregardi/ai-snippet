@@ -8,7 +8,7 @@ const testHandler: RequestHandler = () => {
 }
 
 describe('errorHandler middleware', () => {
-  it.only('should handle errors and return 500 status', async () => {
+  it('should handle errors and return 500 status', async () => {
     const app = express()
 
     app.get('/test', testHandler)

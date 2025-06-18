@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import { Snippet } from '../models/snippet'
 import { summarizeWithOpenAI } from '../services/open-ai/open-ai'
+import mongoose from 'mongoose'
 
 export const router = Router()
 
@@ -28,11 +29,19 @@ router.get('/', async (req: Request, res: Response) => {
   res.send(snippets)
 })
 
-router.get('/:id', async (req: Request, res: Response) => {
-  const snippet = await Snippet.findById(req.params.id)
-  if (!snippet) {
-    res.status(404).send('Snippet not found')
-    return
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const snippet = await Snippet.findById(req.params.id)
+    if (!snippet) {
+      res.status(404).send('Snippet not found')
+      return
+    }
+    res.send(snippet)
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      res.status(404).send('Snippet not found')
+      return
+    }
+    next(error)
   }
-  res.send(snippet)
 })
