@@ -2,10 +2,12 @@ import express from 'express'
 import { router } from './routes'
 import { applyMiddlewares } from './middlewares/common'
 import { connection } from './db'
+import { errorHandler } from './middlewares/error-handler'
 
 export const app = express()
 applyMiddlewares(app)
 app.use(router)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 

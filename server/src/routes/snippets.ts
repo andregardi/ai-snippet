@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import { Snippet } from '../models/snippet'
 
 export const router = Router()
@@ -24,15 +24,11 @@ router.get('/', async (req: Request, res: Response) => {
   res.send(snippets)
 })
 
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     const snippet = await Snippet.findById(req.params.id)
     if (!snippet) {
       res.status(404).send('Snippet not found')
       return
     }
     res.send(snippet)
-  } catch (err) {
-    res.status(400).send('Invalid snippet ID')
-  }
 })
