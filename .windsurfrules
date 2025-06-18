@@ -2,3 +2,5 @@
 - @types are devDependencies
 - Keep route handler files (`src/routes/*`) lean and focused on request/response handling.
 - Add req and res types to route handlers
+- At ./client we are using jest for tests.
+- At ./server we are using vitest for tests.
