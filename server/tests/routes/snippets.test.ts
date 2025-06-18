@@ -41,20 +41,33 @@ describe('Snippets routes', () => {
   })
 
   describe('GET /', () => {
-    it('should return Mocked response from GET /snippets', async () => {
+    let snippetId: string
+    beforeAll(async () => {
+      const response = await request(app)
+        .post('/snippets')
+        .send({ text: sampleText })
+      snippetId = response.body._id
+    })
+
+    it('should return an array of snippets', async () => {
       const response = await request(app).get('/snippets')
 
       expect(response.status).toBe(200)
-      expect(response.text).toBe('Get to snippets')
+      expect(Array.isArray(response.body)).toBe(true)
+      expect(response.body[0]).toMatchObject({
+        text: expect.any(String),
+        summary: expect.any(String)
+      })
     })
-  })
 
-  describe('Get /:id', () => {
-    it('should return Mocked response from GET /snippets/:id', async () => {
-      const response = await request(app).get('/snippets/abc-123')
+    it('should return a specific snippet by id', async () => {
+      const response = await request(app).get(`/snippets/${snippetId}`)
 
       expect(response.status).toBe(200)
-      expect(response.text).toBe('Get to snippets/abc-123')
+      expect(response.body).toMatchObject({
+        text: sampleText,
+        summary: expect.any(String)
+      })
     })
   })
 })

@@ -19,10 +19,20 @@ router.post('/', async (req: Request, res: Response) => {
   res.status(201).send(snippet)
 })
 
-router.get('/', (req: Request, res: Response) => {
-  res.send('Get to snippets')
+router.get('/', async (req: Request, res: Response) => {
+  const snippets = await Snippet.find({})
+  res.send(snippets)
 })
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.send('Get to snippets/abc-123')
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const snippet = await Snippet.findById(req.params.id)
+    if (!snippet) {
+      res.status(404).send('Snippet not found')
+      return
+    }
+    res.send(snippet)
+  } catch (err) {
+    res.status(400).send('Invalid snippet ID')
+  }
 })
