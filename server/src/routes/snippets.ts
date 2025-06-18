@@ -12,7 +12,6 @@ router.post('/', async (req: Request, res: Response) => {
   }
 
   const { output_text } = await summarizeWithOpenAI(req.body.text)
-  console.log(output_text)
 
   const snippet = new Snippet({
     text: req.body.text,

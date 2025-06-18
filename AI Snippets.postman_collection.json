@@ -1,0 +1,84 @@
+{
+	"info": {
+		"_postman_id": "ddeaf4ba-2975-449b-8936-51e11dc469fe",
+		"name": "AI Snippets",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4076484"
+	},
+	"item": [
+		{
+			"name": "Post new Snippet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"Fruits are nature's delicious and nutritious gifts, packed with essential vitamins, minerals, fiber, and antioxidants that promote overall health and well-being. They come in a vibrant array of colors, flavors, and textures, ranging from the juicy sweetness of mangoes and strawberries to the crisp tartness of apples and pomegranates. Rich in nutrients like vitamin C, potassium, and folate, fruits help boost immunity, support heart health, aid digestion, and reduce the risk of chronic diseases such as diabetes and cancer. Whether eaten fresh, dried, blended into smoothies, or added to salads and desserts, fruits provide a versatile and refreshing way to maintain a balanced diet. Tropical fruits like pineapples, bananas, and papayas bring exotic flavors, while berries such as blueberries and raspberries are celebrated for their high antioxidant content. Seasonal fruits like peaches, watermelons, and cherries offer variety throughout the year, ensuring that there is always a delicious and healthy option available. Beyond their nutritional benefits, fruits also play a vital role in culinary traditions worldwide, inspiring countless recipes, beverages, and cultural dishes. By incorporating a diverse mix of fruits into daily meals, individuals can enjoy both their incredible taste and their numerous health advantages, making them an indispensable part of a wholesome lifestyle.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/snippets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"snippets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Snippet",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/snippets/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"snippets",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Snippet by ID",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/snippets/{id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"snippets",
+						"{id}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
