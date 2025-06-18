@@ -1,50 +1,66 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import YourSnippets from '.'
 import useGetAllSnippets from '../../hooks/getAllSnippets'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Mock the hook
 jest.mock('../../hooks/getAllSnippets')
 
 const mockUseGetAllSnippets = useGetAllSnippets as jest.Mock
 
-const mockSnippets = [
-  { _id: '1', text: 'Sample text 1', summary: 'Summary 1' },
-  { _id: '2', text: 'Sample text 2', summary: 'Summary 2' }
-]
+const createWrapper = () => {
+  const queryClient = new QueryClient()
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+}
 
 describe('YourSnippets', () => {
-  test('should show loading state', () => {
+  it('should show loading state', () => {
     mockUseGetAllSnippets.mockReturnValue({
-      loading: true,
       data: null,
+      isLoading: true,
+      isError: false,
       error: null
     })
 
-    render(<YourSnippets />)
+    render(<YourSnippets />, { wrapper: createWrapper() })
     expect(screen.getByText('Loading snippets...')).toBeInTheDocument()
   })
 
-  test('should show error state', () => {
+  it('should show error state', () => {
+    const mockError = new Error('Failed to fetch')
     mockUseGetAllSnippets.mockReturnValue({
-      loading: false,
       data: null,
-      error: new Error('Failed to load')
+      isLoading: false,
+      isError: true,
+      error: mockError
     })
 
-    render(<YourSnippets />)
-    expect(screen.getByText('Error loading snippets')).toBeInTheDocument()
+    render(<YourSnippets />, { wrapper: createWrapper() })
+    expect(screen.getByText(/Error loading snippets/)).toBeInTheDocument()
   })
 
-  test('should show snippets when loaded', () => {
+  it('should show snippets when loaded', async () => {
+    const mockSnippets = [
+      { _id: '1', text: 'Sample 1', summary: 'Summary 1' },
+      { _id: '2', text: 'Sample 2', summary: 'Summary 2' }
+    ]
+
     mockUseGetAllSnippets.mockReturnValue({
-      loading: false,
       data: mockSnippets,
+      isLoading: false,
+      isError: false,
       error: null
     })
 
-    const { getByText } = render(<YourSnippets />)
-    expect(getByText('Your Snippets')).toBeInTheDocument()
-    expect(getByText('Summary 1')).toBeInTheDocument()
-    expect(getByText('Summary 2')).toBeInTheDocument()
+    render(<YourSnippets />, { wrapper: createWrapper() })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading snippets...')).not.toBeInTheDocument()
+    })
+    expect(screen.getByText('Your Snippets')).toBeInTheDocument()
+    expect(screen.getByText('Summary 1')).toBeInTheDocument()
+    expect(screen.getByText('Summary 2')).toBeInTheDocument()
   })
 })

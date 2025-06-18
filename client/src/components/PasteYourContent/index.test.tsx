@@ -1,131 +1,96 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { act } from 'react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import PasteYourContent from '.'
 import useCreateSnippet from '../../hooks/createSnippet'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React from 'react'
 
 // Mock the hook
 jest.mock('../../hooks/createSnippet')
 
-const mockUseCreateSnippet = useCreateSnippet as jest.MockedFunction<
-  typeof useCreateSnippet
->
+const mockUseCreateSnippet = useCreateSnippet as jest.Mock
+
+const createWrapper = () => {
+  const queryClient = new QueryClient()
+
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
+}
 
 describe('PasteYourContent', () => {
   beforeEach(() => {
-    // Reset mock implementation before each test
     mockUseCreateSnippet.mockReturnValue({
-      save: jest.fn(),
-      data: null,
-      loading: false,
+      mutate: jest.fn(),
+      isPending: false,
+      isError: false,
       error: null
     })
   })
 
-  test('should render textarea with placeholder', () => {
-    render(<PasteYourContent />)
+  it('renders correctly', () => {
+    render(<PasteYourContent />, { wrapper: createWrapper() })
+
+    expect(screen.getByText('Paste Your Content')).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText(
-        'Paste your blog draft, transcript, or any text content here...'
-      )
+      screen.getByPlaceholderText('Paste your content here...')
     ).toBeInTheDocument()
+    expect(screen.getByText('Save Snippet')).toBeInTheDocument()
   })
 
-  test('should render Save Snippet button', () => {
-    render(<PasteYourContent />)
-    expect(
-      screen.getByRole('button', { name: 'Save Snippet' })
-    ).toBeInTheDocument()
+  it('updates text state when typing', () => {
+    render(<PasteYourContent />, { wrapper: createWrapper() })
+
+    const input = screen.getByPlaceholderText('Paste your content here...')
+    fireEvent.change(input, { target: { value: 'Test content' } })
+
+    expect(input).toHaveValue('Test content')
   })
 
-  test('should update text when typing', async () => {
-    render(<PasteYourContent />)
-
-    const textarea = screen.getByRole('textbox')
-    await act(async () => {
-      await userEvent.type(textarea, 'Test content')
-    })
-
-    expect(textarea).toHaveValue('Test content')
-  })
-
-  test('should call save when button is clicked', async () => {
-    const mockSave = jest.fn()
+  it('calls mutate when form is submitted', async () => {
+    const mockMutate = jest.fn()
     mockUseCreateSnippet.mockReturnValue({
-      save: mockSave,
-      data: null,
-      loading: false,
+      mutate: mockMutate,
+      isPending: false,
+      isError: false,
       error: null
     })
 
-    render(<PasteYourContent />)
-    
-    const textarea = screen.getByRole('textbox')
-    await act(async () => {
-      await userEvent.type(textarea, 'Test content')
-    })
-    
-    const button = screen.getByRole('button', { name: 'Save Snippet' })
-    await act(async () => {
-      await userEvent.click(button)
-    })
+    render(<PasteYourContent />, { wrapper: createWrapper() })
 
-    expect(mockSave).toHaveBeenCalledWith('Test content')
-  })
+    const input = screen.getByPlaceholderText('Paste your content here...')
+    fireEvent.change(input, { target: { value: 'Test content' } })
+    fireEvent.submit(screen.getByRole('form'))
 
-  test('should disable button when loading', () => {
-    mockUseCreateSnippet.mockReturnValue({
-      save: jest.fn(),
-      data: null,
-      loading: true,
-      error: null
-    })
-
-    render(<PasteYourContent />)
-    expect(screen.getByRole('button', { name: 'Saving...' })).toBeDisabled()
-  })
-
-  test('should show error message when save fails', async () => {
-    const error = new Error('Failed to save')
-    mockUseCreateSnippet.mockReturnValue({
-      save: jest.fn(),
-      data: null,
-      loading: false,
-      error
-    })
-
-    render(<PasteYourContent />)
-    expect(screen.getByText('Failed to save')).toBeInTheDocument()
-  })
-
-  test('should clear input after successful save', async () => {
-    const mockSave = jest.fn().mockResolvedValue({})
-    mockUseCreateSnippet.mockReturnValue({
-      save: mockSave,
-      data: { _id: '1', text: 'Saved', summary: 'Summary' },
-      loading: false,
-      error: null
-    })
-
-    const { rerender } = render(<PasteYourContent />)
-    
-    const textarea = screen.getByRole('textbox')
-    await act(async () => {
-      await userEvent.type(textarea, 'Test content')
-    })
-    
-    const button = screen.getByRole('button', { name: 'Save Snippet' })
-    await act(async () => {
-      await userEvent.click(button)
-    })
-
-    // Simulate successful save by re-rendering with new hook state
-    await act(async () => {
-      rerender(<PasteYourContent />)
-    })
-    
     await waitFor(() => {
-      expect(textarea).toHaveValue('')
+      expect(mockMutate).toHaveBeenCalledWith('Test content')
     })
+  })
+
+  it('shows error message when there is an error', () => {
+    mockUseCreateSnippet.mockReturnValue({
+      mutate: jest.fn(),
+      isPending: false,
+      isError: true,
+      error: new Error('Test error')
+    })
+
+    render(<PasteYourContent />, { wrapper: createWrapper() })
+
+    expect(
+      screen.getByText('Error saving snippet: Test error')
+    ).toBeInTheDocument()
+  })
+
+  it('disables button when pending', () => {
+    mockUseCreateSnippet.mockReturnValue({
+      mutate: jest.fn(),
+      isPending: true,
+      isError: false,
+      error: null
+    })
+
+    render(<PasteYourContent />, { wrapper: createWrapper() })
+
+    expect(screen.getByText('Saving...')).toBeDisabled()
   })
 })

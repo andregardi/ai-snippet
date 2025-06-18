@@ -11,7 +11,7 @@ import {
 import Snippet from './Snippet'
 
 export default function YourSnippets() {
-  const { data, loading, error } = useGetAllSnippets()
+  const { data, isLoading, isError, error } = useGetAllSnippets()
 
   return (
     <Paper elevation={3} sx={{ p: 3 }}>
@@ -19,16 +19,16 @@ export default function YourSnippets() {
         Your Snippets
       </Typography>
 
-      {loading && (
+      {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
           <CircularProgress />
           <Typography sx={{ ml: 2 }}>Loading snippets...</Typography>
         </Box>
       )}
 
-      {error && (
+      {isError && (
         <Typography color="error" sx={{ my: 2 }}>
-          Error loading snippets
+          Error loading snippets: {error?.message}
         </Typography>
       )}
 
