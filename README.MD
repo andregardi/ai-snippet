@@ -3,6 +3,8 @@
 
 > A simple tool for content teams to quickly generate AI-powered summaries from raw text.
 
+![Alt Text](https://github.com/andregardi/ai-snippet/blob/main/screen-record.gif?raw=true)
+
 ## Table of Contents
 
 *   [About The Project](#about-the-project)
