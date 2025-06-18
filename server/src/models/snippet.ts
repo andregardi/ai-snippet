@@ -1,10 +1,10 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose'
 
 export interface SnippetDocument extends Document {
-  text: string;
-  summary: string;
-  createdAt: Date;
-  updatedAt: Date;
+  text: string
+  summary: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 const SnippetSchema = new Schema<SnippetDocument>(
@@ -12,10 +12,10 @@ const SnippetSchema = new Schema<SnippetDocument>(
     text: { type: String, required: true },
     summary: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
-  { timestamps: true },
-);
+  { timestamps: true }
+)
 
-export const Snippet = mongoose.model<SnippetDocument>('Snippet', SnippetSchema);
+export const Snippet = mongoose.model<SnippetDocument>('Snippet', SnippetSchema)
